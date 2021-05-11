@@ -17,8 +17,7 @@ provider "aws" {
 resource "aws_security_group" "binderhub" {
   name        = "binderhub"
   description = "Open ports for Binderhub and Jupyerthub"
-  vpc_id      = var.vpc_id
-
+ 
   ingress {
     description = "Binderhub ports"
     from_port   = 30000
@@ -51,8 +50,7 @@ resource "aws_instance" "ec2" {
   ami                    = var.ami
   instance_type          = var.instance_type
   vpc_security_group_ids = [aws_security_group.binderhub.id]
-  subnet_id              = var.subnet_id
-
+ 
   tags = {
     Name = "${var.tag}"
   }

@@ -5,8 +5,6 @@ Create a file called "terraform.tfvars" with the content:
 ```
 region             = "<your AWS region>" (defaults to eu-west-2)
 ami                = "<your AMI for this region>" (defaults to ami-0194c3e07668a7e36)
-subnet_id          = "<your subnet id>"
-vpc_id             = "<your vpc id>"
 key_name           = "<your key name>"
 key_path           = "<path to your private key>"
 dockerhub_username = "<your Dockerhub username>"

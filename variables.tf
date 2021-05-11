@@ -13,14 +13,6 @@ variable "ami" {
   default = "ami-0194c3e07668a7e36"
 }
 
-variable "subnet_id" {
-  type = string
-}
-
-variable "vpc_id" {
-  type = string
-}
-
 variable "key_name" {
   type = string
 }
