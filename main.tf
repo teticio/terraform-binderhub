@@ -80,8 +80,7 @@ resource "aws_instance" "ec2" {
       "export BINDERHUB_IMAGE_PREFIX=${var.dockerhub_username}/binder-dev-",
       "export BINDERHUB_HELM_VERSION=${var.binderhub_helm_version}",
       "export EC2_PUBLIC_IP=${aws_instance.ec2.public_ip}",
-      "chmod +x /tmp/bootstrap.sh",
-      "/tmp/bootstrap.sh"
+      "bash /tmp/bootstrap.sh"
     ]
   }
 
