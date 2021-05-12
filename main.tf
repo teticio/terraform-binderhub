@@ -79,8 +79,9 @@ resource "aws_instance" "ec2" {
       "export DOCKERHUB_PASSWORD=${var.dockerhub_password}",
       "export BINDERHUB_IMAGE_PREFIX=${var.dockerhub_username}/binder-dev-",
       "export BINDERHUB_HELM_VERSION=${var.binderhub_helm_version}",
-      "export EC2_PUBLIC_IP=${aws_instance.ec2.public_ip}",
-      "bash /tmp/bootstrap.sh"
+      "export EC2_PUBLIC_IP=${aws_instance.ec2.private_ip}",
+      "chmod +x /tmp/bootstrap.sh",
+      "/tmp/bootstrap.sh"
     ]
   }
 
