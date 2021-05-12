@@ -16,7 +16,7 @@ provider "aws" {
 
 resource "aws_security_group" "binderhub" {
   name        = "binderhub"
-  description = "Open ports for Binderhub and Jupyerthub"
+  description = "Open ports for Binderhub and Jupyerhub"
  
   ingress {
     description = "Binderhub ports"
