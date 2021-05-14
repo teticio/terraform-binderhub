@@ -48,14 +48,6 @@ sudo helm upgrade binderhub jupyterhub/binderhub --version=$BINDERHUB_HELM_VERSI
 sudo kubectl --namespace binderhub get svc binder -o jsonpath='{.spec.ports[0].nodePort}' > binderhub_port
 export BINDERHUB_URL=http://$(echo $EC2_PUBLIC_IP):$(cat binderhub_port)
 
-# install patched repo
-# wait for pod to be ready
-#while [[ $(sudo kubectl --namespace binderhub get pods $(sudo kubectl --namespace binderhub get pods | awk '/binder/ {print $1;exit}') -o 'jsonpath={..status.conditions[?(@.type=="Ready")].status}') != "True" ]]; do echo "waiting for pod" && sleep 1; done
-#export BINDER_POD=$(sudo kubectl --namespace binderhub get pods | awk '/binder/ {print $1;exit}')
-#sudo kubectl --namespace binderhub exec $BINDER_POD -- /bin/bash -c "apt-get update"
-#sudo kubectl --namespace binderhub exec $BINDER_POD -- /bin/bash -c "DEBIAN_FRONTEND=noninteractive apt-get install npm curl libcurl4-gnutls-dev librtmp-dev -y"
-#sudo kubectl --namespace binderhub exec $BINDER_POD -- /bin/bash -c "pip install --force git+https://github.com/teticio/binderhub.git"
-
 echo "Binderhub running at $BINDERHUB_URL"
 echo "Test with $BINDERHUB_URL/v2/gh/binder-examples/bokeh.git/HEAD?urlpath=%2Fproxy%2F5006%2Fbokeh-app"
 echo "You may need to wait for a few minutes for the service to come online"

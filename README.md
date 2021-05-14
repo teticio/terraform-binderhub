@@ -26,6 +26,4 @@ You can run a Kubernetes dashboard by logging on to the instance with SSH, runnn
 
 Note that currently all the ports between 30000 and 40000 are opened in the security group, as the Binderhub and Jupyterhub ports are not known a priori*. The respective ports can be found in ```~/binderhub_port``` and ```~/jupyterhub_port``` and Terraform could be configured to only open these, but this would require a second "apply".
 
-At the end of the ```bootstrap.sh``` is a commented out section that allows you to install Binderhub from a forked repo for testing purposes.
-
 \* While it is possible to configure the Jupterhub port, it doesn't appear to be possible to do this with the Binderhub port.
