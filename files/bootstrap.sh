@@ -41,12 +41,12 @@ sudo helm install binderhub jupyterhub/binderhub --version=$BINDERHUB_HELM_VERSI
 
 # get jupyterhub port and point binderhub to it
 sudo kubectl --namespace binderhub get svc proxy-public -o jsonpath='{.spec.ports[0].nodePort}' > jupyterhub_port
-sed -i "s/<URL>/http:\/\/$(echo $EC2_PUBLIC_IP):$(cat jupyterhub_port)/" /tmp/config.yaml
+sed -i "s/<URL>/http:\/\/$EC2_PUBLIC_IP:$(cat jupyterhub_port)/" /tmp/config.yaml
 
 # upgrade binderhub with new config and get port
 sudo helm upgrade binderhub jupyterhub/binderhub --version=$BINDERHUB_HELM_VERSION --namespace=binderhub -f /tmp/secret.yaml -f /tmp/config.yaml
 sudo kubectl --namespace binderhub get svc binder -o jsonpath='{.spec.ports[0].nodePort}' > binderhub_port
-export BINDERHUB_URL=http://$(echo $EC2_PUBLIC_IP):$(cat binderhub_port)
+export BINDERHUB_URL=http://$EC2_PUBLIC_IP:$(cat binderhub_port)
 
 echo "Binderhub running at $BINDERHUB_URL"
 echo "Test with $BINDERHUB_URL/v2/gh/binder-examples/bokeh.git/HEAD?urlpath=%2Fproxy%2F5006%2Fbokeh-app"
