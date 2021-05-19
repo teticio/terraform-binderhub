@@ -43,3 +43,8 @@ variable "binderhub_helm_version" {
   type    = string
   default = "0.2.0-n557.h46ddaac"
 }
+
+variable "jupyterhub_port" {
+  type    = string
+  default = "30123"
+}

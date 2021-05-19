@@ -18,9 +18,17 @@ resource "aws_security_group" "binderhub" {
   description = "Open ports for Binderhub and Jupyerhub"
  
   ingress {
-    description = "Binderhub ports"
-    from_port   = 30000
-    to_port     = 40000
+    description = "Jupyterhub port"
+    from_port   = var.jupyterhub_port
+    to_port     = var.jupyterhub_port
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "Binderhub port"
+    from_port   = 80
+    to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -75,6 +83,7 @@ resource "aws_instance" "ec2" {
   provisioner "remote-exec" {
     inline = [
       "cloud-init status --wait",
+      "export JUPYTERHUB_PORT=${var.jupyterhub_port}",
       "export DOCKERHUB_USERNAME=${var.dockerhub_username}",
       "export DOCKERHUB_PASSWORD=${var.dockerhub_password}",
       "export BINDERHUB_IMAGE_PREFIX=${var.dockerhub_username}/binder-dev-",

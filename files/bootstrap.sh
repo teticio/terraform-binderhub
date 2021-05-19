@@ -26,8 +26,8 @@ sudo minikube start --driver=none
 curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
 chmod 700 get_helm.sh
 ./get_helm.sh
-helm repo add jupyterhub https://jupyterhub.github.io/helm-chart/
-helm repo update
+sudo helm repo add jupyterhub https://jupyterhub.github.io/helm-chart/
+sudo helm repo update
 
 # install binderhub
 export JUPYTERHUB_API_TOKEN=$(openssl rand -hex 32)
@@ -60,8 +60,8 @@ sudo minikube kubectl create namespace binderhub
 sudo helm install binderhub jupyterhub/binderhub --version=$BINDERHUB_HELM_VERSION --namespace=binderhub -f /tmp/secret.yaml -f /tmp/config.yaml
 
 # get jupyterhub port and point binderhub to it
-sudo kubectl --namespace binderhub get svc proxy-public -o jsonpath='{.spec.ports[0].nodePort}' > jupyterhub_port
-sed -i "s/<URL>/http:\/\/$EC2_PUBLIC_IP:$(cat jupyterhub_port)/" /tmp/config.yaml
+export JUPYTERHUB_PORT=$(sudo kubectl --namespace binderhub get svc proxy-public -o jsonpath='{.spec.ports[0].nodePort}')
+sed -i "s/<URL>/http:\/\/$EC2_PUBLIC_IP:$JUPYTERHUB_PORT/" /tmp/config.yaml
 
 # (dev version) upgrade binderhub with new config and get port
 #sudo helm upgrade binderhub helm-chart/binderhub/ --namespace=binderhub -f /tmp/secret.yaml -f /tmp/config.yaml
@@ -69,9 +69,16 @@ sed -i "s/<URL>/http:\/\/$EC2_PUBLIC_IP:$(cat jupyterhub_port)/" /tmp/config.yam
 # (prod version) upgrade binderhub with new config and get port
 sudo helm upgrade binderhub jupyterhub/binderhub --version=$BINDERHUB_HELM_VERSION --namespace=binderhub -f /tmp/secret.yaml -f /tmp/config.yaml
 
-sudo kubectl --namespace binderhub get svc binder -o jsonpath='{.spec.ports[0].nodePort}' > binderhub_port
-export BINDERHUB_URL=http://$EC2_PUBLIC_IP:$(cat binderhub_port)
+# get binderhub port
+export BINDERHUB_PORT=$(sudo kubectl --namespace binderhub get svc binder -o jsonpath='{.spec.ports[0].nodePort}')
 
-echo "Binderhub running at $BINDERHUB_URL"
-echo "Test with $BINDERHUB_URL/v2/gh/binder-examples/bokeh.git/HEAD?urlpath=%2Fproxy%2F5006%2Fbokeh-app"
+# install nginx reverse proxy to serve binderhub on port 80
+sudo apt-get install nginx -y
+sudo unlink /etc/nginx/sites-enabled/default
+envsubst < /tmp/reverse-proxy.conf | sudo tee /etc/nginx/sites-available/reverse-proxy.conf
+sudo ln -s /etc/nginx/sites-available/reverse-proxy.conf /etc/nginx/sites-enabled/reverse-proxy.conf
+sudo service nginx restart
+
+echo "Binderhub running at http://$EC2_PUBLIC_IP"
+echo "Test with http://$EC2_PUBLIC_IP/v2/gh/binder-examples/bokeh.git/HEAD?urlpath=%2Fproxy%2F5006%2Fbokeh-app"
 echo "You may need to wait for a few minutes for the service to come online"

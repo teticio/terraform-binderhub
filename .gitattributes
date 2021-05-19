@@ -1,1 +1,2 @@
 *.sh text eol=lf
+reverse-proxy.conf text eol=lf
