@@ -26,8 +26,8 @@ sudo minikube start --driver=none
 curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
 chmod 700 get_helm.sh
 ./get_helm.sh
-sudo helm repo add jupyterhub https://jupyterhub.github.io/helm-chart/
-sudo helm repo update
+helm repo add jupyterhub https://jupyterhub.github.io/helm-chart/
+helm repo update
 
 # install binderhub
 export JUPYTERHUB_API_TOKEN=$(openssl rand -hex 32)
@@ -37,14 +37,38 @@ mv /tmp/secret.yaml.tmp /tmp/secret.yaml
 envsubst < /tmp/config.yaml > /tmp/config.yaml.tmp
 mv /tmp/config.yaml.tmp /tmp/config.yaml
 sudo minikube kubectl create namespace binderhub
+
+# install dev version ##########################################
+#git clone https://github.com/teticio/binderhub.git
+#cd binderhub
+#
+# build Docker images
+#sudo docker build . -f helm-chart/images/binderhub/Dockerfile -t jupyterhub/k8s-binderhub:local
+#sudo docker build helm-chart/images/image-cleaner -t jupyterhub/k8s-image-cleaner:local
+#
+# add Jupyterhub to chart
+#mkdir -p helm-chart/binderhub/charts
+#cd helm-chart/binderhub/charts
+#helm pull jupyterhub/jupyterhub --version=0.11.1
+#tar -xvzf jupyterhub-*
+#cd ../../../
+#
+#sudo helm install binderhub helm-chart/binderhub/ --namespace=binderhub -f /tmp/secret.yaml -f /tmp/config.yaml
+################################################################
+
+# install prod version
 sudo helm install binderhub jupyterhub/binderhub --version=$BINDERHUB_HELM_VERSION --namespace=binderhub -f /tmp/secret.yaml -f /tmp/config.yaml
 
 # get jupyterhub port and point binderhub to it
 sudo kubectl --namespace binderhub get svc proxy-public -o jsonpath='{.spec.ports[0].nodePort}' > jupyterhub_port
 sed -i "s/<URL>/http:\/\/$EC2_PUBLIC_IP:$(cat jupyterhub_port)/" /tmp/config.yaml
 
-# upgrade binderhub with new config and get port
+# (dev version) upgrade binderhub with new config and get port
+#sudo helm upgrade binderhub helm-chart/binderhub/ --namespace=binderhub -f /tmp/secret.yaml -f /tmp/config.yaml
+
+# (prod version) upgrade binderhub with new config and get port
 sudo helm upgrade binderhub jupyterhub/binderhub --version=$BINDERHUB_HELM_VERSION --namespace=binderhub -f /tmp/secret.yaml -f /tmp/config.yaml
+
 sudo kubectl --namespace binderhub get svc binder -o jsonpath='{.spec.ports[0].nodePort}' > binderhub_port
 export BINDERHUB_URL=http://$EC2_PUBLIC_IP:$(cat binderhub_port)
 
