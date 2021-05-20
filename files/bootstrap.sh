@@ -21,6 +21,7 @@ sudo install -o root -g root -m 0755 kubectl /usr/local/bin/kubectl
 curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
 sudo install minikube-linux-amd64 /usr/local/bin/minikube
 sudo minikube start --driver=none
+sudo systemctl enable kubelet.service
 
 # install helm
 curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
@@ -32,6 +33,7 @@ sudo helm repo update
 # install binderhub
 export JUPYTERHUB_API_TOKEN=$(openssl rand -hex 32)
 export JUPYTERHUB_SECRET_TOKEN=$(openssl rand -hex 32)
+export JUPYTERHUB_COOKIE_SECRET=$(openssl rand -hex 32)
 envsubst < /tmp/secret.yaml > /tmp/secret.yaml.tmp
 mv /tmp/secret.yaml.tmp /tmp/secret.yaml
 envsubst < /tmp/config.yaml > /tmp/config.yaml.tmp
@@ -82,3 +84,5 @@ sudo service nginx restart
 echo "Binderhub running at http://$EC2_PUBLIC_IP"
 echo "Test with http://$EC2_PUBLIC_IP/v2/gh/binder-examples/bokeh.git/HEAD?urlpath=%2Fproxy%2F5006%2Fbokeh-app"
 echo "You may need to wait for a few minutes for the service to come online"
+
+#ssh ubuntu@$(terraform output -json | jq '.instance_public_ip.value' | tr -d '"')
