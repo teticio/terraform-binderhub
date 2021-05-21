@@ -2,4 +2,4 @@ config:
   BinderHub:
     use_registry: true
     image_prefix: $BINDERHUB_IMAGE_PREFIX
-    hub_url: <URL>
+    hub_url: http://$EC2_PUBLIC_IP:$JUPYTERHUB_PORT
