@@ -10,13 +10,13 @@ terraform {
 }
 
 provider "aws" {
-  region  = var.region
+  region = var.region
 }
 
 resource "aws_security_group" "binderhub" {
   name        = "binderhub"
   description = "Open ports for Binderhub and Jupyerhub"
- 
+
   ingress {
     description = "Jupyterhub port"
     from_port   = var.jupyterhub_port
@@ -57,7 +57,7 @@ resource "aws_instance" "ec2" {
   ami                    = var.ami
   instance_type          = var.instance_type
   vpc_security_group_ids = [aws_security_group.binderhub.id]
- 
+
   tags = {
     Name = "${var.tag}"
   }
