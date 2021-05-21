@@ -60,6 +60,7 @@ sudo minikube kubectl create namespace binderhub
 
 # install prod version
 sudo helm install binderhub jupyterhub/binderhub --version=$BINDERHUB_HELM_VERSION --namespace=binderhub -f /tmp/secret.yaml -f /tmp/config.yaml
+################################################################
 
 # get binderhub port
 export BINDERHUB_PORT=$(sudo kubectl --namespace binderhub get svc binder -o jsonpath='{.spec.ports[0].nodePort}')

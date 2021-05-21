@@ -24,4 +24,4 @@ and take note of the URLs that are output at the end of the installation process
 
 You can run a Kubernetes dashboard by logging on to the instance with SSH, runnning ```sudo minikube dashboard --url``` and forwarding the appropriate port.
 
-\* While it is possible to configure the Jupterhub port, it doesn't appear to be possible to do this with the Binderhub port.
+If you want to install Binderhub from a particular repo or branch, you can uncomment the ```# install dev version``` section in ```bootstrap.sh``` and comment out the ```# install prod version``` section.
